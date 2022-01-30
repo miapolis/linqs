@@ -1,0 +1,2 @@
+ALTER TABLE link_uses
+ADD COLUMN ts TIMESTAMP;

@@ -1,0 +1,21 @@
+{
+  "name": "@example/starter",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "format": "prettier --write --plugin-search-dir=. .",
+    "prettier:check": "prettier --check --plugin-search-dir=. ."
+  },
+  "devDependencies": {
+    "astro": "^0.22.20",
+    "prettier": "^2.5.1",
+    "prettier-plugin-astro": "^0.0.12"
+  },
+  "dependencies": {
+    "tailwindcss": "^3.0.18"
+  }
+}

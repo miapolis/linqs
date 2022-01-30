@@ -1,0 +1,2 @@
+ALTER TABLE link_uses
+DROP COLUMN ts;

@@ -1,0 +1,4 @@
+CREATE TABLE link_items (
+    id VARCHAR(10) PRIMARY KEY,
+    url VARCHAR(200) NOT NULL
+);
