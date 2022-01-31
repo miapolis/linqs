@@ -4,6 +4,8 @@ use rocket::http::hyper::header::UserAgent;
 use rocket::request::{FromRequest, Outcome, Request};
 use std::net::{IpAddr, Ipv4Addr};
 
+// Included to prevent linker errors
+extern crate openssl;
 #[macro_use]
 extern crate rocket;
 #[macro_use]
