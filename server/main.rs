@@ -10,13 +10,17 @@ extern crate openssl;
 extern crate rocket;
 #[macro_use]
 extern crate diesel;
+#[macro_use]
+extern crate diesel_migrations;
 
 mod cors;
 mod create;
 mod db;
+mod password;
 mod redirect;
 mod serve_static;
 mod track;
+mod users;
 
 #[derive(Debug)]
 struct UserData {
@@ -50,5 +54,6 @@ fn main() {
     rocket = redirect::mount(rocket);
     rocket = create::mount(rocket);
     rocket = track::mount(rocket);
-    rocket.launch();
+    rocket = users::mount(rocket);
+    rocket.attach(cors::CORS).launch();
 }

@@ -16,19 +16,6 @@ table! {
     }
 }
 
-table! {
-    posts (id) {
-        id -> Int4,
-        title -> Varchar,
-        body -> Text,
-        published -> Bool,
-    }
-}
-
 joinable!(link_uses -> link_items (link_item_id));
 
-allow_tables_to_appear_in_same_query!(
-    link_items,
-    link_uses,
-    posts,
-);
+allow_tables_to_appear_in_same_query!(link_items, link_uses,);
