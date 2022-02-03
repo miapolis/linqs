@@ -7,8 +7,8 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "format": "prettier --write --plugin-search-dir=. .",
-    "prettier:check": "prettier --check --plugin-search-dir=. ."
+    "format": "prettier --write .",
+    "prettier:check": "prettier --check ."
   },
   "devDependencies": {
     "astro": "^0.22.20",

@@ -3,7 +3,8 @@ use crate::password;
 use rocket::http::{Cookie, Cookies, Status};
 use rocket::request::{FromRequest, Outcome};
 use rocket::{Request, Rocket};
-use rocket_contrib::json::Json;
+use rocket_contrib::json;
+use rocket_contrib::json::{Json, JsonValue};
 use serde::{Deserialize, Serialize};
 
 #[derive(FromForm, Deserialize)]
@@ -19,7 +20,7 @@ struct LoginInfo {
 }
 
 pub struct AuthenticatedUser {
-    id: i32,
+    pub id: i32,
 }
 
 #[derive(Debug, Serialize)]
@@ -46,7 +47,7 @@ impl LoginResponse {
 }
 
 impl<'a, 'r> FromRequest<'a, 'r> for AuthenticatedUser {
-    type Error = ();
+    type Error = JsonValue;
 
     fn from_request(req: &'a Request<'r>) -> Outcome<AuthenticatedUser, Self::Error> {
         let cookie_opt = req.cookies().get_private("user_id");
@@ -55,9 +56,21 @@ impl<'a, 'r> FromRequest<'a, 'r> for AuthenticatedUser {
                 let user_id = c.value().parse::<i32>().unwrap();
                 Outcome::Success(AuthenticatedUser { id: user_id })
             }
-            None => Outcome::Failure((Status::Unauthorized, ())),
+            None => Outcome::Failure((
+                Status::Unauthorized,
+                json!({ "error": "not_authenticated" }),
+            )),
         }
     }
+}
+
+#[get("/me")]
+fn me(connection: db::DbConn, user: AuthenticatedUser) -> JsonValue {
+    let user = User::get_id(user.id, &connection);
+    json!({
+        "id": user.id,
+        "username": user.username,
+    })
 }
 
 #[post("/create", format = "json", data = "<create_info>")]
@@ -103,5 +116,5 @@ pub fn logout(mut cookies: Cookies) {
 }
 
 pub fn mount(rocket: Rocket) -> Rocket {
-    rocket.mount("/api/users", routes![create, login, logout])
+    rocket.mount("/api/users", routes![me, create, login, logout])
 }

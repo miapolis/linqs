@@ -1,13 +1,14 @@
-use crate::{db};
-use db::LinkItem;
+use crate::db;
+use crate::users::AuthenticatedUser;
 use db::create_link;
+use db::LinkItem;
 use rocket::Rocket;
 use rocket_contrib::json;
 use rocket_contrib::json::JsonValue;
 use url::Url;
 
 #[post("/create?<path>&<url>")]
-fn submit(path: String, url: String, connection: db::DbConn) -> JsonValue {
+fn submit(path: String, url: String, connection: db::DbConn, user: AuthenticatedUser) -> JsonValue {
     if url.is_empty() {
         return json!({
             "status": "error",
@@ -29,7 +30,7 @@ fn submit(path: String, url: String, connection: db::DbConn) -> JsonValue {
         });
     }
 
-    let item = create_link(&path, &url, &connection);
+    let item = create_link(user.id, &path, &url, &connection);
 
     json!({
         "status": "ok",
@@ -37,7 +38,6 @@ fn submit(path: String, url: String, connection: db::DbConn) -> JsonValue {
         "track_id": item.track_id
     })
 }
-
 
 pub fn mount(rocket: Rocket) -> Rocket {
     rocket.mount("/api/", routes![submit])

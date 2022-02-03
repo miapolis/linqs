@@ -2,6 +2,9 @@
 
 use rocket::http::hyper::header::UserAgent;
 use rocket::request::{FromRequest, Outcome, Request};
+use rocket::response::NamedFile;
+use rocket_contrib::json;
+use rocket_contrib::json::JsonValue;
 use std::net::{IpAddr, Ipv4Addr};
 
 // Included to prevent linker errors
@@ -46,6 +49,18 @@ impl<'a, 'r> FromRequest<'a, 'r> for UserData {
     }
 }
 
+#[catch(401)]
+fn unauthorized() -> JsonValue {
+    json!({
+        "error": "unauthorized",
+    })
+}
+
+#[catch(404)]
+fn not_found() -> NamedFile {
+    NamedFile::open("./frontend/dist/404.html").unwrap()
+}
+
 fn main() {
     dotenv::dotenv().ok();
 
@@ -55,5 +70,8 @@ fn main() {
     rocket = create::mount(rocket);
     rocket = track::mount(rocket);
     rocket = users::mount(rocket);
-    rocket.attach(cors::CORS).launch();
+    rocket
+        .attach(cors::CORS)
+        .register(catchers![unauthorized, not_found])
+        .launch();
 }

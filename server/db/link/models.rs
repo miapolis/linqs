@@ -1,5 +1,6 @@
 use super::schema::{link_items, link_uses};
 use super::schema::{link_items::dsl as li_dsl, link_uses::dsl as lu_dsl};
+use crate::db::User;
 use chrono::Utc;
 use diesel;
 use diesel::pg::PgConnection;
@@ -8,10 +9,12 @@ use diesel::BelongingToDsl;
 use diesel::RunQueryDsl;
 use std::net::Ipv4Addr;
 
-#[derive(Identifiable, Queryable, AsChangeset, Debug)]
+#[derive(Identifiable, Queryable, AsChangeset, Debug, Associations)]
+#[belongs_to(User)]
 #[table_name = "link_items"]
 pub struct LinkItem {
     pub id: String,
+    pub user_id: i32,
     pub url: String,
     pub track_id: String,
 }
@@ -20,6 +23,7 @@ pub struct LinkItem {
 #[table_name = "link_items"]
 pub struct InsertableLinkItem {
     pub id: String,
+    pub user_id: i32,
     pub url: String,
     pub track_id: String,
 }
@@ -36,10 +40,17 @@ pub struct LinkUse {
 }
 
 impl LinkItem {
-    pub fn create(id: &str, url: &str, track_id: &str, conn: &PgConnection) -> LinkItem {
+    pub fn create(
+        id: &str,
+        user_id: i32,
+        url: &str,
+        track_id: &str,
+        conn: &PgConnection,
+    ) -> LinkItem {
         diesel::insert_into(link_items::table)
             .values(&InsertableLinkItem {
                 id: id.to_owned(),
+                user_id,
                 url: url.to_owned(),
                 track_id: track_id.to_owned(),
             })
@@ -87,6 +98,7 @@ impl LinkItem {
 impl LinkUse {
     pub fn get_all_tracks(id: &str, conn: &PgConnection) -> Option<(LinkItem, Vec<Self>)> {
         if let Some(item) = LinkItem::get_track(id, conn) {
+            println!("ITEM {:?}", item);
             if let Some(tracks) = Self::belonging_to(&item).load::<LinkUse>(conn).ok() {
                 return Some((item, tracks));
             }

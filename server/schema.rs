@@ -11,6 +11,7 @@ table! {
         id -> Varchar,
         url -> Varchar,
         track_id -> Nullable<Varchar>,
+        user_id -> Nullable<Int4>,
     }
 }
 
@@ -25,21 +26,13 @@ table! {
 }
 
 table! {
-    posts (id) {
-        id -> Int4,
-        title -> Varchar,
-        body -> Text,
-        published -> Bool,
-    }
-}
-
-table! {
     users (id) {
         id -> Int4,
         username -> Varchar,
     }
 }
 
+joinable!(link_items -> users (user_id));
 joinable!(link_uses -> link_items (link_item_id));
 
 allow_tables_to_appear_in_same_query!(

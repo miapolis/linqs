@@ -1,5 +1,6 @@
 <script>
   import PrimaryButton from "../components/primary-button.svelte";
+  import Input from "../components/input.svelte";
 
   let path = "";
   let url = "";
@@ -52,44 +53,27 @@
 </script>
 
 <div
-  class="w-4/5 mx-auto border-2 border-gray-800 text-white p-5 leading-10 rounded-lg shadow-lg"
+  class="max-w-lg border-2 border-gray-800 text-white p-5 leading-10 rounded-lg shadow-lg"
 >
   <label class="text-gray-400 text-xs m-0 p-0 h-0" for="path"
     >The Path after <strong>i.lerners.io</strong> (leave empty for random)</label
   >
-  <!-- svelte-ignore a11y-autofocus -->
-  <input
-    id="path"
-    class={`w-full rounded-md outline-none border-2 p-2 text-sm ${
-      pathError == undefined
-        ? "border-gray-800 focus:border-gray-400"
-        : "border-red-600"
-    } transition-all bg-black`}
+  <Input
     placeholder="Path"
     autofocus
-    bind:value={path}
+    error={pathError}
+    onChange={(e) => (path = e)}
   />
-  {#if pathError}
-    <div class="text-gray-400 text-sm mt-2">{pathError}</div>
-  {/if}
   <label class="text-gray-400 text-xs m-0 p-0 h-0" for="url">Redirect URL</label
   >
-  <input
-    id="url"
-    class={`w-full rounded-md outline-none border-2 p-2 text-sm ${
-      urlError == undefined
-        ? "border-gray-800 focus:border-gray-400"
-        : "border-red-600"
-    } transition-all bg-black`}
+  <Input
     placeholder="https://google.com"
-    bind:value={url}
+    error={urlError}
+    onChange={(e) => (url = e)}
   />
-  {#if urlError}
-    <div class="text-gray-400 text-sm mt-2">{urlError}</div>
-  {/if}
   <div class="my-4 border-[1px] border-gray-900" />
   <div class="flex flex-1 justify-start items-center">
-    <div class="whitespace-nowrap text-sm">Learn more about creating links</div>
+    <!-- <div class="whitespace-nowrap text-sm">Learn more about creating links</div> -->
     <span class="w-full" />
     <PrimaryButton content="Create Link" loading={buttonLoading} {onClick} />
   </div>

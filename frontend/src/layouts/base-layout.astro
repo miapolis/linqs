@@ -1,8 +1,8 @@
 ---
-const { title } = Astro.props;
+const { title, showNavbar } = Astro.props;
 ---
 
-<html lang="en">
+<html lang="en" class="h-full">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -14,8 +14,22 @@ const { title } = Astro.props;
     </style>
   </head>
   <body>
-    <div class="bg-black min-h-screen overflow-auto">
-      <slot />
+    <div class="bg-black min-h-screen overflow-auto flex flex-col">
+      <div class="flex-[1_0_auto] flex items-stretch flex-col">
+        <slot />
+      </div>
+      <footer class="flex-shrink-0 p-6 flex items-center border-t-[1px] border-slate-800 mt-10">
+        <div class="text-slate-500 flex flex-row">
+          <a href="/" class="hover:underline hover:text-slate-400">Linqs</a>
+          <div class="mx-2 text-gray-700 font-bold">|</div>
+          <a
+            href="https://github.com/miapolis/linqs"
+            class="hover:underline hover:text-slate-400">Github</a
+          >
+          <div class="mx-2 text-gray-700 font-bold">|</div>
+          <div>Ethan Lerner</div>
+        </div>
+      </footer>
     </div>
   </body>
 </html>

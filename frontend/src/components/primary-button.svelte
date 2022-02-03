@@ -5,11 +5,11 @@
 </script>
 
 <button
-  class={`right-0 mx-[2px] px-2  ${
+  class={`right-0 mx-[2px] p-[7px] text-sm ${
     !loading
-      ? "bg-blue-600 outline-blue-600 hover:bg-black hover:text-blue-600 focus:bg-black focus:text-blue-600"
+      ? "bg-blue-600 outline-blue-600 hover:bg-black hover:text-blue-600 focus-visible:outline-blue-500 focus-visible:outline-4"
       : "bg-black outline-blue-600 text-blue-600 cursor-not-allowed"
-  } whitespace-nowrap rounded-md h-8 font-size-[0.7em] outline outline-2 transition-all inline-flex items-center`}
+  } whitespace-nowrap rounded-md outline outline-2 transition-all inline-flex items-center active:bg-slate-800`}
   tabindex="0"
   on:click={() => onClick()}
   >{#if loading}<svg

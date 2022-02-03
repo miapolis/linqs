@@ -1,26 +1,8 @@
 ---
 import BaseLayout from "../layouts/base-layout.astro";
-import IndexForm from "../modules/index-form.svelte";
+import Home from "../modules/home.svelte";
 ---
 
-<BaseLayout title="Linqs">
-  <div class="container max-w-5xl mx-auto px-4">
-    <div class="w-4/5 mx-auto">
-      <h1 class="mt-32 text-white text-8xl font-bold">LINQS</h1>
-    </div>
-    <div class="w-4/5 my-10 mx-auto">
-      <h3 class="text-gray-300">
-        An extremely performant URL shortener server.<br />
-        See a <strong><a href="https://lerners.io">demo.</a></strong>
-      </h3>
-    </div>
-    <IndexForm client:visible />
-    <footer>
-      <div class="w-4/5 mx-auto">
-        <div class="absolute text-sm bottom-10 text-gray-300">
-          &copy Ethan Lerner 2022
-        </div>
-      </div>
-    </footer>
-  </div>
+<BaseLayout title="Linqs" showNavbar={true}>
+  <Home client:load />
 </BaseLayout>

@@ -1,6 +1,7 @@
 table! {
     link_items (id) {
         id -> Text,
+        user_id -> Int4,
         url -> Text,
         track_id -> Text,
     }

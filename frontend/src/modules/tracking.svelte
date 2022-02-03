@@ -11,7 +11,6 @@
     const json = await (
       await fetch(`${import.meta.env.PUBLIC_API}/track?id=${id}`)
     ).json();
-    console.log(json);
 
     if (json.status == 200) {
       result = json;

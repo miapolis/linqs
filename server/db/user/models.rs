@@ -23,6 +23,14 @@ impl User {
             .expect("Failed to insert user!")
     }
 
+    pub fn get_id(id_: i32, conn: &PgConnection) -> UserEntity {
+        use super::schema::users::dsl::*;
+        users
+            .find(id_)
+            .first::<UserEntity>(conn)
+            .expect("Failed to get user!")
+    }
+
     pub fn get_by_username(username_: &str, conn: &PgConnection) -> Option<UserEntity> {
         use super::schema::users::dsl::*;
         users
