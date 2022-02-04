@@ -19,6 +19,7 @@ extern crate diesel_migrations;
 mod cors;
 mod create;
 mod db;
+mod links;
 mod password;
 mod redirect;
 mod serve_static;
@@ -69,6 +70,7 @@ fn main() {
     rocket = redirect::mount(rocket);
     rocket = create::mount(rocket);
     rocket = track::mount(rocket);
+    rocket = links::mount(rocket);
     rocket = users::mount(rocket);
     rocket
         .attach(cors::CORS)

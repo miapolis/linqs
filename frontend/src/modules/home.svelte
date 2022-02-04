@@ -1,5 +1,6 @@
 <script>
   import IndexForm from "./index-form.svelte";
+  import Links from "./links.svelte";
   import LoginForm from "./login-form.svelte";
   import Navbar from "../components/navbar.svelte";
 
@@ -21,7 +22,7 @@
   });
 </script>
 
-<Navbar loggedIn={loggedIn} username={username} />
+<Navbar {loggedIn} {username} shouldFetch={false} />
 <div class="container max-w-5xl mx-auto px-4">
   <div class="w-4/5 mx-auto">
     <h1 class="mt-32 text-white text-6xl font-bold">LINQS</h1>
@@ -35,6 +36,8 @@
   <div class="w-4/5 mx-auto">
     {#if loggedIn != null && loggedIn}
       <IndexForm />
+      <div class="w-full h-10" />
+      <Links />
     {:else if loggedIn == false}
       <LoginForm />
     {/if}

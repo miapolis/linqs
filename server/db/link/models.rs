@@ -7,13 +7,15 @@ use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::BelongingToDsl;
 use diesel::RunQueryDsl;
+use serde::Serialize;
 use std::net::Ipv4Addr;
 
-#[derive(Identifiable, Queryable, AsChangeset, Debug, Associations)]
+#[derive(Serialize, Identifiable, Queryable, AsChangeset, Debug, Associations)]
 #[belongs_to(User)]
 #[table_name = "link_items"]
 pub struct LinkItem {
     pub id: String,
+    #[serde(skip)]
     pub user_id: i32,
     pub url: String,
     pub track_id: String,
@@ -62,9 +64,17 @@ impl LinkItem {
         li_dsl::link_items.find(id).first::<LinkItem>(conn).ok()
     }
 
-    pub fn get_track(id: &str, conn: &PgConnection) -> Option<LinkItem> {
+    pub fn get_all_user(user_id_: i32, conn: &PgConnection) -> Option<Vec<LinkItem>> {
+        li_dsl::link_items
+            .filter(li_dsl::user_id.eq(user_id_))
+            .load::<LinkItem>(conn)
+            .ok()
+    }
+
+    pub fn get_track(id: &str, user_id_: i32, conn: &PgConnection) -> Option<LinkItem> {
         li_dsl::link_items
             .filter(li_dsl::track_id.eq(id))
+            .filter(li_dsl::user_id.eq(user_id_))
             .first::<LinkItem>(conn)
             .ok()
     }
@@ -96,8 +106,12 @@ impl LinkItem {
 }
 
 impl LinkUse {
-    pub fn get_all_tracks(id: &str, conn: &PgConnection) -> Option<(LinkItem, Vec<Self>)> {
-        if let Some(item) = LinkItem::get_track(id, conn) {
+    pub fn get_all_tracks(
+        id: &str,
+        user_id: i32,
+        conn: &PgConnection,
+    ) -> Option<(LinkItem, Vec<Self>)> {
+        if let Some(item) = LinkItem::get_track(id, user_id, conn) {
             println!("ITEM {:?}", item);
             if let Some(tracks) = Self::belonging_to(&item).load::<LinkUse>(conn).ok() {
                 return Some((item, tracks));

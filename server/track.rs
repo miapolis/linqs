@@ -1,5 +1,5 @@
-use crate::users::AuthenticatedUser;
 use crate::db;
+use crate::users::AuthenticatedUser;
 use db::LinkUse;
 use rocket::Rocket;
 use rocket_contrib::json::Json;
@@ -40,8 +40,8 @@ impl LinkTrack {
 }
 
 #[get("/?<id>")]
-fn track(id: String, connection: db::DbConn, _user: AuthenticatedUser) -> Json<Response> {
-    if let Some((item, tracks)) = LinkUse::get_all_tracks(&id, &connection) {
+fn track(id: String, connection: db::DbConn, user: AuthenticatedUser) -> Json<Response> {
+    if let Some((item, tracks)) = LinkUse::get_all_tracks(&id, user.id, &connection) {
         let tracks: Vec<LinkTrack> = tracks.into_iter().map(|t| LinkTrack::from_db(t)).collect();
         Json(Response {
             status: 200,
