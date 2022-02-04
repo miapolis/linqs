@@ -85,7 +85,6 @@ impl LinkItem {
         user_agent: &str,
         conn: &PgConnection,
     ) -> Option<LinkItem> {
-        println!("ID: {:?}", id);
         if let Some(item) = Self::get_id(id, conn) {
             let bytes = ip.and_then(|i| Some(i.octets().to_vec()));
             diesel::insert_into(link_uses::table)
@@ -112,7 +111,6 @@ impl LinkUse {
         conn: &PgConnection,
     ) -> Option<(LinkItem, Vec<Self>)> {
         if let Some(item) = LinkItem::get_track(id, user_id, conn) {
-            println!("ITEM {:?}", item);
             if let Some(tracks) = Self::belonging_to(&item).load::<LinkUse>(conn).ok() {
                 return Some((item, tracks));
             }
