@@ -16,6 +16,7 @@
       `${import.meta.env.PUBLIC_API}/create?path=${path}&url=${url}`,
       {
         method: "POST",
+        credentials: "include",
       }
     );
     let json = await response.json();

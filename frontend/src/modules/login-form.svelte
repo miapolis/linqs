@@ -28,6 +28,7 @@
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({ username, password }),
       })
     ).json();
@@ -42,6 +43,7 @@
           break;
       }
     } else {
+      console.log(json);
       window.location.reload();
     }
   };
@@ -54,11 +56,17 @@
   <label class="text-gray-400 text-xs m-0 p-0 h-0" for="username">
     Username
   </label>
-  <Input autofocus error={usernameError} onChange={(e) => (username = e)} />
+  <Input
+    id="username"
+    autofocus
+    error={usernameError}
+    onChange={(e) => (username = e)}
+  />
   <label class="text-gray-400 text-xs m-0 p-0 h-0" for="password">
     Password
   </label>
   <Input
+    id="password"
     error={passwordError}
     type="password"
     onChange={(e) => (password = e)}

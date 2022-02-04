@@ -11,7 +11,9 @@
 
   onMount(async () => {
     const json = await (
-      await fetch(`${import.meta.env.PUBLIC_API}/users/me`)
+      await fetch(`${import.meta.env.PUBLIC_API}/users/me`, {
+        credentials: "include",
+      })
     ).json();
     if (json.error) {
       loggedIn = false;

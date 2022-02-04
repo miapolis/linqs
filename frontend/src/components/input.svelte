@@ -1,5 +1,6 @@
 <script>
   export let error = undefined;
+  export let id = undefined;
   export let autofocus = false;
   export let placeholder = undefined;
   export let type = undefined;
@@ -9,7 +10,7 @@
 
 <!-- svelte-ignore a11y-autofocus -->
 <input
-  id="path"
+  {id}
   class={`w-full rounded-md outline-none border-2 p-2 text-sm ${
     error == undefined
       ? "border-gray-800 focus:border-gray-400"

@@ -6,7 +6,9 @@
 
   onMount(async () => {
     const json = await (
-      await fetch(`${import.meta.env.PUBLIC_API}/links/all`)
+      await fetch(`${import.meta.env.PUBLIC_API}/links/all`, {
+        credentials: "include",
+      })
     ).json();
     links = json.links;
   });

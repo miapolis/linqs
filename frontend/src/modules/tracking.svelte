@@ -11,7 +11,9 @@
     const id = urlParams.get("id");
 
     const json = await (
-      await fetch(`${import.meta.env.PUBLIC_API}/track?id=${id}`)
+      await fetch(`${import.meta.env.PUBLIC_API}/track?id=${id}`, {
+        credentials: "include",
+      })
     ).json();
 
     if (json.status == 200) {
@@ -35,20 +37,24 @@
       </h3>
     </div>
     <div class="w-4/5 mx-auto rounded-xl border-2 border-gray-800 mt-12 p-4">
-      <table>
-        <tr>
-          <th class="text-gray-300">Time</th>
-          <th class="text-gray-300">IP</th>
-          <th class="text-gray-300">User Agent</th>
-        </tr>
-        {#each result.tracks as track}
-          <tr class="border-b-2 border-gray-800 p-1">
-            <td class="text-gray-300 text-sm">{track.time.split(".")[0]}</td>
-            <td class="text-gray-300 text-sm">{track.ip}</td>
-            <td class="text-gray-300 text-sm">{track.user_agent}</td>
+      {#if result.tracks.length}
+        <table>
+          <tr>
+            <th class="text-gray-300">Time</th>
+            <th class="text-gray-300">IP</th>
+            <th class="text-gray-300">User Agent</th>
           </tr>
-        {/each}
-      </table>
+          {#each result.tracks as track}
+            <tr class="border-b-2 border-gray-800 p-1">
+              <td class="text-gray-300 text-sm">{track.time.split(".")[0]}</td>
+              <td class="text-gray-300 text-sm">{track.ip}</td>
+              <td class="text-gray-300 text-sm">{track.user_agent}</td>
+            </tr>
+          {/each}
+        </table>
+      {:else}
+        <div class="text-white text-lg">No results</div>
+      {/if}
     </div>
     <div class="h-10" />
   {:else if loaded}

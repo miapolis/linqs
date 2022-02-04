@@ -5,7 +5,10 @@
 </script>
 
 <div
-  on:click={() => (window.location = `${import.meta.env.PUBLIC_URL}/track?id=${track_id}`)}
+  on:click={() => {
+    const url = `${window.location.origin}/track?id=${track_id}`;
+    window.location = url;
+  }}
   class="bg-gray-900 cursor-pointer rounded-lg outline-hidden outline-offset-0
   hover:outline-slate-800 hover:outline hover:outline-2 p-3"
 >

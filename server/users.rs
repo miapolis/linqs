@@ -1,6 +1,6 @@
 use crate::db::{self, AuthInfo, User};
 use crate::password;
-use rocket::http::{Cookie, Cookies, Status};
+use rocket::http::{Cookie, Cookies, SameSite, Status};
 use rocket::request::{FromRequest, Outcome};
 use rocket::{Request, Rocket};
 use rocket_contrib::json;
@@ -50,6 +50,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for AuthenticatedUser {
     type Error = JsonValue;
 
     fn from_request(req: &'a Request<'r>) -> Outcome<AuthenticatedUser, Self::Error> {
+        println!("COOKIES: {:?}", req.cookies());
         let cookie_opt = req.cookies().get_private("user_id");
         match cookie_opt {
             Some(c) => {
@@ -94,7 +95,12 @@ fn login(
             match auth_opt {
                 Some(auth) => {
                     if password::verify(&login_info.password, &auth.password_hash) {
-                        cookies.add_private(Cookie::new("user_id", user.id.to_string()));
+                        cookies.add_private(
+                            Cookie::build("user_id", user.id.to_string())
+                                .same_site(SameSite::None)
+                                .secure(true)
+                                .finish(),
+                        );
                         Json(LoginResponse {
                             error: None,
                             user_id: Some(user.id),
@@ -110,11 +116,19 @@ fn login(
     }
 }
 
+#[options("/login")]
+fn login_options() -> Status {
+    Status::Ok
+}
+
 #[post("/logout")]
 pub fn logout(mut cookies: Cookies) {
     cookies.remove_private(Cookie::named("user_id"))
 }
 
 pub fn mount(rocket: Rocket) -> Rocket {
-    rocket.mount("/api/users", routes![me, create, login, logout])
+    rocket.mount(
+        "/api/users",
+        routes![me, create, login, login_options, logout],
+    )
 }
