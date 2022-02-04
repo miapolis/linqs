@@ -17,5 +17,9 @@ services:
       - "8000:8000"
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db/linqs
+    volumes:
+      - type: bind
+        source: ./linqs.toml
+        target: /linqs.toml
     depends_on:
       - db
