@@ -16,7 +16,10 @@ extern crate rocket;
 extern crate diesel;
 #[macro_use]
 extern crate diesel_migrations;
+#[macro_use]
+extern crate lazy_static;
 
+mod config;
 mod cors;
 mod create;
 mod db;
@@ -26,6 +29,12 @@ mod redirect;
 mod serve_static;
 mod track;
 mod users;
+
+use config::Config;
+
+lazy_static! {
+    pub static ref CONFIG: Config = Config::create();
+}
 
 #[derive(Debug)]
 struct UserData {
@@ -65,6 +74,7 @@ fn not_found() -> NamedFile {
 
 fn main() {
     dotenv::dotenv().ok();
+    CONFIG.print();
 
     let mut rocket = rocket::ignite().manage(db::init_pool());
     rocket = serve_static::mount(rocket);

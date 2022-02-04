@@ -74,11 +74,15 @@ fn me(connection: db::DbConn, user: AuthenticatedUser) -> JsonValue {
 }
 
 #[post("/create", format = "json", data = "<create_info>")]
-fn create(create_info: Json<CreateInfo>, connection: db::DbConn) -> Json<i32> {
-    let user = User::create(&create_info.username, &connection);
-    let password_hash = password::hash(&create_info.password);
-    AuthInfo::create(user.id, &password_hash, &connection);
-    Json(user.id)
+fn create(create_info: Json<CreateInfo>, connection: db::DbConn) -> Json<Option<i32>> {
+    if crate::CONFIG.options.new_accounts {
+        let user = User::create(&create_info.username, &connection);
+        let password_hash = password::hash(&create_info.password);
+        AuthInfo::create(user.id, &password_hash, &connection);
+        Json(Some(user.id))
+    } else {
+        Json(None)
+    }
 }
 
 #[post("/login", format = "json", data = "<login_info>")]
