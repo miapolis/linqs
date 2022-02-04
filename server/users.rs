@@ -50,7 +50,6 @@ impl<'a, 'r> FromRequest<'a, 'r> for AuthenticatedUser {
     type Error = JsonValue;
 
     fn from_request(req: &'a Request<'r>) -> Outcome<AuthenticatedUser, Self::Error> {
-        println!("COOKIES: {:?}", req.cookies());
         let cookie_opt = req.cookies().get_private("user_id");
         match cookie_opt {
             Some(c) => {

@@ -1,4 +1,5 @@
 #![feature(decl_macro)]
+#![feature(stmt_expr_attributes)]
 
 use rocket::http::hyper::header::UserAgent;
 use rocket::request::{FromRequest, Outcome, Request};
@@ -72,8 +73,11 @@ fn main() {
     rocket = track::mount(rocket);
     rocket = links::mount(rocket);
     rocket = users::mount(rocket);
-    rocket
-        .attach(cors::CORS)
-        .register(catchers![unauthorized, not_found])
-        .launch();
+
+    if cfg!(debug_assertions) {
+        // Use CORS only in debug mode
+        rocket = rocket.attach(cors::CORS);
+    }
+
+    rocket.register(catchers![unauthorized, not_found]).launch();
 }
