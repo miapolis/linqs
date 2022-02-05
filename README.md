@@ -1,0 +1,36 @@
+# Linqs
+### A highly-performant URL shortener
+
+<img src="/.github/docs/ss1.png">
+
+#### Example with docker-compose
+```yaml
+version: "3.9"
+
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    ports:
+      - "5438:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=linqs
+  linqs:
+    image: miapolis/linqs
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db/linqs
+    volumes:
+      - type: bind
+        source: ./linqs.toml
+        target: /linqs.toml
+      - type: bind
+        source: ./Rocket.toml
+        target: /Rocket.toml
+    depends_on:
+      - db
+```
