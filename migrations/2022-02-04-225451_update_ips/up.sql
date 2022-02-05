@@ -1,0 +1,2 @@
+ALTER TABLE link_uses
+ALTER COLUMN ip TYPE TEXT
