@@ -4,7 +4,6 @@ use db::LinkUse;
 use rocket::Rocket;
 use rocket_contrib::json::Json;
 use serde::Serialize;
-use std::net::Ipv4Addr;
 
 #[derive(Serialize)]
 struct Response {
@@ -23,16 +22,8 @@ struct LinkTrack {
 
 impl LinkTrack {
     fn from_db(l: db::LinkUse) -> Self {
-        let mut ip_str = String::from("N/A");
-        if let Some(ip) = l.ip {
-            let mut bytes: [u8; 4] = [0; 4];
-            bytes.copy_from_slice(ip.as_slice());
-            let addr = Ipv4Addr::from(bytes);
-            ip_str = addr.to_string();
-        }
-
         Self {
-            ip: ip_str,
+            ip: l.ip,
             user_agent: l.user_agent,
             time: l.ts.to_string(),
         }

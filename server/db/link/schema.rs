@@ -13,7 +13,7 @@ table! {
     link_uses (link_item_id) {
         id -> Integer,
         link_item_id -> Text,
-        ip -> Nullable<Binary>,
+        ip -> Text,
         user_agent -> Text,
         ts -> Timestamp,
     }

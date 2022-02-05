@@ -8,7 +8,6 @@ use diesel::prelude::*;
 use diesel::BelongingToDsl;
 use diesel::RunQueryDsl;
 use serde::Serialize;
-use std::net::Ipv4Addr;
 
 #[derive(Serialize, Identifiable, Queryable, AsChangeset, Debug, Associations)]
 #[belongs_to(User)]
@@ -36,7 +35,7 @@ pub struct InsertableLinkItem {
 pub struct LinkUse {
     pub id: i32,
     pub link_item_id: String,
-    pub ip: Option<Vec<u8>>,
+    pub ip: String,
     pub user_agent: String,
     pub ts: chrono::NaiveDateTime,
 }
@@ -81,16 +80,15 @@ impl LinkItem {
 
     pub fn consume(
         id: &str,
-        ip: Option<Ipv4Addr>,
+        ip_: &str,
         user_agent: &str,
         conn: &PgConnection,
     ) -> Option<LinkItem> {
         if let Some(item) = Self::get_id(id, conn) {
-            let bytes = ip.and_then(|i| Some(i.octets().to_vec()));
             diesel::insert_into(link_uses::table)
                 .values((
                     lu_dsl::link_item_id.eq(item.id.clone()),
-                    lu_dsl::ip.eq(bytes),
+                    lu_dsl::ip.eq(ip_),
                     lu_dsl::user_agent.eq(user_agent),
                     lu_dsl::ts.eq(Utc::now().naive_utc()),
                 ))

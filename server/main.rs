@@ -6,7 +6,6 @@ use rocket::request::{FromRequest, Outcome, Request};
 use rocket::response::NamedFile;
 use rocket_contrib::json;
 use rocket_contrib::json::JsonValue;
-use std::net::{IpAddr, Ipv4Addr};
 
 // Included to prevent linker errors
 extern crate openssl;
@@ -38,7 +37,7 @@ lazy_static! {
 
 #[derive(Debug)]
 struct UserData {
-    ip: Option<Ipv4Addr>,
+    ip: String,
     user_agent: UserAgent,
 }
 
@@ -46,15 +45,11 @@ impl<'a, 'r> FromRequest<'a, 'r> for UserData {
     type Error = ();
 
     fn from_request(request: &'a Request<'r>) -> Outcome<Self, Self::Error> {
-        let client_ip = request.client_ip().unwrap();
-        let ip_addr = match client_ip {
-            IpAddr::V4(addr) => Some(addr),
-            _ => None,
-        };
+        let client_ip = format!("{}", request.client_ip().unwrap());
         let user_agent = UserAgent(request.headers().get_one("User-Agent").unwrap().to_string());
 
         Outcome::Success(Self {
-            ip: ip_addr,
+            ip: client_ip,
             user_agent,
         })
     }

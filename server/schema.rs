@@ -19,9 +19,18 @@ table! {
     link_uses (id) {
         id -> Int4,
         link_item_id -> Nullable<Varchar>,
-        ip -> Nullable<Bytea>,
+        ip -> Nullable<Text>,
         user_agent -> Nullable<Text>,
         ts -> Nullable<Timestamp>,
+    }
+}
+
+table! {
+    posts (id) {
+        id -> Int4,
+        title -> Varchar,
+        body -> Text,
+        published -> Bool,
     }
 }
 
