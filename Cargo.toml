@@ -12,6 +12,7 @@ argon2 = "0.3.3"
 chrono = "0.4.19"
 colored = "2.0.0"
 diesel = {version = "1.4.4", features = ["postgres", "chrono", "r2d2", "network-address"]}
+diesel-derive-enum = {version = "1.1.2", features = ["postgres"]}
 diesel_migrations = "1.4.0"
 dotenv = "0.15.0"
 ipnetwork = "0.18.0"
@@ -19,6 +20,7 @@ lazy_static = "1.4.0"
 nanoid = "0.4.0"
 r2d2 = "0.8.9"
 rand_core = {version = "0.6", features = ["std"]}
+regex = "1.5.4"
 rocket = "0.4.10"
 serde = {version = "1.0.136", features = ["derive"]}
 toml = "0.5.8"

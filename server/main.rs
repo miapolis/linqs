@@ -24,6 +24,7 @@ mod create;
 mod db;
 mod links;
 mod password;
+mod path;
 mod redirect;
 mod serve_static;
 mod track;

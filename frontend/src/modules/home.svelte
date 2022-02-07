@@ -3,6 +3,7 @@
   import Links from "./links.svelte";
   import LoginForm from "./login-form.svelte";
   import Navbar from "../components/navbar.svelte";
+  import { api } from "./path";
 
   import { onMount } from "svelte";
 
@@ -11,7 +12,7 @@
 
   onMount(async () => {
     const json = await (
-      await fetch(`${import.meta.env.PUBLIC_API}/users/me`, {
+      await fetch(`${api()}/users/me`, {
         credentials: "include",
       })
     ).json();

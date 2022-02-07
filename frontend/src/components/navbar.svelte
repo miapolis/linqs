@@ -4,9 +4,10 @@
   export let shouldFetch = true;
 
   import { onMount } from "svelte";
+  import { api } from "../modules/path.js";
 
   const logout = async () => {
-    await fetch(`${import.meta.env.PUBLIC_API}/users/logout`, {
+    await fetch(`${api()}/users/logout`, {
       method: "POST",
       credentials: "include",
     });
@@ -16,7 +17,7 @@
   onMount(async () => {
     if (shouldFetch) {
       const json = await (
-        await fetch(`${import.meta.env.PUBLIC_API}/users/me`, {
+        await fetch(`${api()}/users/me`, {
           credentials: "include",
         })
       ).json();

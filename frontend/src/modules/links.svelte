@@ -1,12 +1,13 @@
 <script>
   import LinkCard from "../components/link-card.svelte";
+  import { api } from "./path";
   import { onMount } from "svelte";
 
   let links = [];
 
   onMount(async () => {
     const json = await (
-      await fetch(`${import.meta.env.PUBLIC_API}/links/all`, {
+      await fetch(`${api()}/links/all`, {
         credentials: "include",
       })
     ).json();

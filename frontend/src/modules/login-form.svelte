@@ -1,5 +1,6 @@
 <script>
   import Input from "../components/input.svelte";
+  import { api } from "./path";
 
   let username = "";
   let password = "";
@@ -23,7 +24,7 @@
     }
 
     const json = await (
-      await fetch(`${import.meta.env.PUBLIC_API}/users/login`, {
+      await fetch(`${api()}/users/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

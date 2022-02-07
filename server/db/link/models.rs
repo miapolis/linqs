@@ -7,9 +7,18 @@ use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::BelongingToDsl;
 use diesel::RunQueryDsl;
+use diesel_derive_enum::DbEnum;
 use serde::Serialize;
 
-#[derive(Serialize, Identifiable, Queryable, AsChangeset, Debug, Associations)]
+#[derive(Serialize, Debug, PartialEq, DbEnum)]
+#[DieselType = "TrackItemMapping"]
+pub enum TrackItem {
+    Time,
+    Ip,
+    UserAgent,
+}
+
+#[derive(Serialize, Identifiable, Queryable, Debug, Associations)]
 #[belongs_to(User)]
 #[table_name = "link_items"]
 pub struct LinkItem {
@@ -18,6 +27,8 @@ pub struct LinkItem {
     pub user_id: i32,
     pub url: String,
     pub track_id: String,
+    pub uses: i32,
+    pub to_track: Vec<TrackItem>,
 }
 
 #[derive(Insertable)]
@@ -27,6 +38,8 @@ pub struct InsertableLinkItem {
     pub user_id: i32,
     pub url: String,
     pub track_id: String,
+    pub uses: i32,
+    pub to_track: Vec<TrackItem>,
 }
 
 #[derive(Identifiable, Queryable, Debug, Associations)]
@@ -35,9 +48,9 @@ pub struct InsertableLinkItem {
 pub struct LinkUse {
     pub id: i32,
     pub link_item_id: String,
-    pub ip: String,
-    pub user_agent: String,
-    pub ts: chrono::NaiveDateTime,
+    pub ip: Option<String>,
+    pub user_agent: Option<String>,
+    pub ts: Option<chrono::NaiveDateTime>,
 }
 
 impl LinkItem {
@@ -46,6 +59,7 @@ impl LinkItem {
         user_id: i32,
         url: &str,
         track_id: &str,
+        to_track: Vec<TrackItem>,
         conn: &PgConnection,
     ) -> LinkItem {
         diesel::insert_into(link_items::table)
@@ -54,6 +68,8 @@ impl LinkItem {
                 user_id,
                 url: url.to_owned(),
                 track_id: track_id.to_owned(),
+                uses: 0,
+                to_track,
             })
             .get_result(conn)
             .expect("Failed to insert link item!")
@@ -78,27 +94,45 @@ impl LinkItem {
             .ok()
     }
 
-    pub fn consume(
-        id: &str,
-        ip_: &str,
-        user_agent: &str,
-        conn: &PgConnection,
-    ) -> Option<LinkItem> {
+    pub fn increment_uses(link_item: &LinkItem, conn: &PgConnection) {
+        diesel::update(link_item)
+            .set(li_dsl::uses.eq(li_dsl::uses + 1))
+            .execute(conn)
+            .ok();
+    }
+
+    pub fn consume(id: &str, ip: &str, user_agent: &str, conn: &PgConnection) -> Option<LinkItem> {
         if let Some(item) = Self::get_id(id, conn) {
-            diesel::insert_into(link_uses::table)
-                .values((
-                    lu_dsl::link_item_id.eq(item.id.clone()),
-                    lu_dsl::ip.eq(ip_),
-                    lu_dsl::user_agent.eq(user_agent),
-                    lu_dsl::ts.eq(Utc::now().naive_utc()),
-                ))
-                .execute(conn)
-                .expect("Failed to insert link use!");
+            let ip_ = track_value(&item.to_track, TrackItem::Ip, ip);
+            let user_agent_ = track_value(&item.to_track, TrackItem::UserAgent, user_agent);
+            let time_ = track_value(&item.to_track, TrackItem::Time, Utc::now().naive_utc());
+
+            if ip_.is_some() || user_agent_.is_some() || time_.is_some() {
+                diesel::insert_into(link_uses::table)
+                    .values((
+                        lu_dsl::link_item_id.eq(item.id.clone()),
+                        lu_dsl::ip.eq(ip_),
+                        lu_dsl::user_agent.eq(user_agent_),
+                        lu_dsl::ts.eq(time_),
+                    ))
+                    .execute(conn)
+                    .expect("Failed to insert link use!");
+            }
+
+            Self::increment_uses(&item, conn);
 
             Some(item)
         } else {
             None
         }
+    }
+}
+
+fn track_value<T>(tracks: &Vec<TrackItem>, item: TrackItem, value: T) -> Option<T> {
+    if tracks.contains(&item) {
+        Some(value)
+    } else {
+        None
     }
 }
 

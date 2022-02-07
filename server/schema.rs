@@ -12,6 +12,8 @@ table! {
         url -> Varchar,
         track_id -> Nullable<Varchar>,
         user_id -> Nullable<Int4>,
+        uses -> Nullable<Int4>,
+        to_track -> Nullable<Array<Track_item>>,
     }
 }
 
@@ -20,7 +22,7 @@ table! {
         id -> Int4,
         link_item_id -> Nullable<Varchar>,
         ip -> Nullable<Text>,
-        user_agent -> Nullable<Text>,
+        user_agent -> Nullable<Varchar>,
         ts -> Nullable<Timestamp>,
     }
 }
