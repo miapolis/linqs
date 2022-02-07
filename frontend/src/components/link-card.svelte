@@ -1,6 +1,7 @@
 <script>
   export let path;
   export let url;
+  export let uses;
   export let track_id;
 </script>
 
@@ -12,6 +13,15 @@
   class="bg-gray-900 cursor-pointer rounded-lg outline-hidden outline-offset-0
   hover:outline-slate-800 hover:outline hover:outline-2 p-3"
 >
-  <div class="font-bold text-md">{path}</div>
-  <div class="text-sm text-gray-400">{url}</div>
+  <div class="w-full overflow-hidden">
+    <div class="flex flex-row items-center">
+      <div class="font-bold text-md max-w-[80%] overflow-hidden overflow-ellipsis">
+        {path}
+      </div>
+      <div class="ml-2 text-gray-200 text-sm">{uses}</div>
+    </div>
+    <div class="text-sm text-gray-400 overflow-hidden overflow-ellipsis">
+      {url}
+    </div>
+  </div>
 </div>
