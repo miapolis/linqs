@@ -2,9 +2,13 @@ export const main = () => {
   return window.location.origin;
 };
 
-export const api = () => {
+export const apiBase = () => {
   if (import.meta.env.PUBLIC_API_URL) {
     return import.meta.env.PUBLIC_API_URL;
   }
-  return `${main()}/api`;
+  return main();
+};
+
+export const api = () => {
+  return `${apiBase()}/api`;
 };

@@ -7,7 +7,7 @@
 
 <div
   on:click={() => {
-    const url = `${window.location.origin}/track?id=${track_id}`;
+    const url = `${window.location.origin}/link?id=${track_id}`;
     window.location = url;
   }}
   class="bg-gray-900 cursor-pointer rounded-lg outline-hidden outline-offset-0
@@ -15,7 +15,9 @@
 >
   <div class="w-full overflow-hidden">
     <div class="flex flex-row items-center">
-      <div class="font-bold text-md max-w-[80%] overflow-hidden overflow-ellipsis">
+      <div
+        class="font-bold text-md max-w-[80%] overflow-hidden overflow-ellipsis"
+      >
         {path}
       </div>
       <div class="ml-2 text-gray-200 text-sm">{uses}</div>

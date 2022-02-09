@@ -7,7 +7,7 @@ use rocket::response::NamedFile;
 use rocket_contrib::json;
 use rocket_contrib::json::JsonValue;
 
-// Included to prevent linker errors
+// Include OpenSSL to prevent linker errors
 extern crate openssl;
 #[macro_use]
 extern crate rocket;
@@ -20,14 +20,12 @@ extern crate lazy_static;
 
 mod config;
 mod cors;
-mod create;
 mod db;
 mod links;
 mod password;
 mod path;
 mod redirect;
 mod serve_static;
-mod track;
 mod users;
 
 use config::Config;
@@ -75,10 +73,8 @@ fn main() {
     let mut rocket = rocket::ignite().manage(db::init_pool());
     rocket = serve_static::mount(rocket);
     rocket = redirect::mount(rocket);
-    rocket = create::mount(rocket);
-    rocket = track::mount(rocket);
-    rocket = links::mount(rocket);
     rocket = users::mount(rocket);
+    rocket = links::mount(rocket);
 
     if cfg!(debug_assertions) {
         // Use CORS only in debug mode

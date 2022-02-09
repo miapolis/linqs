@@ -18,7 +18,7 @@
   const onClick = async () => {
     buttonLoading = true;
 
-    let response = await fetch(`${api()}/create`, {
+    let response = await fetch(`${api()}/links/create`, {
       method: "POST",
       credentials: "include",
       body: JSON.stringify({
@@ -53,7 +53,7 @@
 
       setTimeout(() => {
         buttonLoading = false;
-        window.location = `${main()}/track?id=${json.track_id}`;
+        window.location = `${main()}/link?id=${json.track_id}`;
       }, 1000);
 
       return;

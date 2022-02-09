@@ -2,7 +2,11 @@ use regex::Regex;
 
 lazy_static! {
     // Regex that ensures that the string contains only letters, numbers, dashes, and underscores
-    pub static ref VALID_LINK_REGEX: Regex = Regex::new(r"^[a-zA-Z0-9\-_]+$").unwrap();
+    static ref VALID_LINK_REGEX: Regex = Regex::new(r"^[a-zA-Z0-9\-_]+$").unwrap();
+}
+
+pub fn valid(path: &str) -> bool {
+    VALID_LINK_REGEX.is_match(path)
 }
 
 #[cfg(test)]

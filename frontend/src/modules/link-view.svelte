@@ -1,19 +1,20 @@
 <script>
   import Navbar from "../components/navbar.svelte";
   import Clipboard from "svelte-clipboard";
-  import { api, main } from "./path";
+  import { api, apiBase } from "./path";
   import { onMount } from "svelte";
 
   let result = undefined;
   let loaded = false;
   let copiedLink = false;
+  export let id;
 
   onMount(async () => {
     const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get("id");
+    id = urlParams.get("id");
 
     const json = await (
-      await fetch(`${api()}/track?id=${id}`, {
+      await fetch(`${api()}/links/${id}`, {
         credentials: "include",
       })
     ).json();
@@ -23,6 +24,14 @@
     }
     loaded = true;
   });
+
+  const deleteLink = async () => {
+    await fetch(`${api()}/links/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    window.location.pathname = "/";
+  };
 </script>
 
 <Navbar shouldFetch={true} />
@@ -34,7 +43,7 @@
           Tracking for Link <strong>{result.link_id}</strong>
         </h1>
         <Clipboard
-          text={`${main()}/${result.link_id}`}
+          text={`${apiBase()}/${result.link_id}`}
           let:copy
           on:copy={() => {
             copiedLink = true;
@@ -61,6 +70,12 @@
           ><a href={result.link_url}>{result.link_url}</a></strong
         >
       </h3>
+      <div
+        class="text-gray-400 mt-2 hover:text-gray-200 cursor-pointer"
+        on:click={() => deleteLink()}
+      >
+        delete
+      </div>
     </div>
     <div class="w-4/5 mx-auto rounded-xl border-2 border-gray-800 mt-12 p-4">
       {#if result.tracks.length}

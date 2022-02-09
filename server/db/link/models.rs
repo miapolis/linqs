@@ -103,17 +103,17 @@ impl LinkItem {
 
     pub fn consume(id: &str, ip: &str, user_agent: &str, conn: &PgConnection) -> Option<LinkItem> {
         if let Some(item) = Self::get_id(id, conn) {
-            let ip_ = track_value(&item.to_track, TrackItem::Ip, ip);
-            let user_agent_ = track_value(&item.to_track, TrackItem::UserAgent, user_agent);
-            let time_ = track_value(&item.to_track, TrackItem::Time, Utc::now().naive_utc());
+            let ip = track_value(&item.to_track, TrackItem::Ip, ip);
+            let user_agent = track_value(&item.to_track, TrackItem::UserAgent, user_agent);
+            let time = track_value(&item.to_track, TrackItem::Time, Utc::now().naive_utc());
 
-            if ip_.is_some() || user_agent_.is_some() || time_.is_some() {
+            if ip.is_some() || user_agent.is_some() || time.is_some() {
                 diesel::insert_into(link_uses::table)
                     .values((
                         lu_dsl::link_item_id.eq(item.id.clone()),
-                        lu_dsl::ip.eq(ip_),
-                        lu_dsl::user_agent.eq(user_agent_),
-                        lu_dsl::ts.eq(time_),
+                        lu_dsl::ip.eq(ip),
+                        lu_dsl::user_agent.eq(user_agent),
+                        lu_dsl::ts.eq(time),
                     ))
                     .execute(conn)
                     .expect("Failed to insert link use!");
@@ -125,6 +125,15 @@ impl LinkItem {
         } else {
             None
         }
+    }
+
+    pub fn delete(id: &str, conn: &PgConnection) {
+        diesel::delete(link_items::table.find(id))
+            .execute(conn)
+            .ok();
+        diesel::delete(link_uses::table.filter(lu_dsl::link_item_id.eq(id)))
+            .execute(conn)
+            .ok();
     }
 }
 

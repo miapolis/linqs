@@ -7,7 +7,7 @@
 
   onMount(async () => {
     const json = await (
-      await fetch(`${api()}/links/all`, {
+      await fetch(`${api()}/links`, {
         credentials: "include",
       })
     ).json();
