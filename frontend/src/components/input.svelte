@@ -4,6 +4,8 @@
   export let autofocus = false;
   export let placeholder = undefined;
   export let type = undefined;
+  export let min = undefined;
+  export let max = undefined;
   export let classes = "";
   export let onChange;
 </script>
@@ -19,6 +21,8 @@
   {placeholder}
   {autofocus}
   {type}
+  {min}
+  {max}
   on:input={(e) => {
     onChange(e.target.value);
   }}

@@ -19,6 +19,8 @@ struct CreateRequest {
     track_time: bool,
     track_ip: bool,
     track_user_agent: bool,
+    expires_in_minutes: Option<i64>,
+    max_uses: Option<i32>,
 }
 
 #[post("/create", data = "<req>")]
@@ -30,25 +32,37 @@ fn create(req: Json<CreateRequest>, connection: db::DbConn, user: AuthenticatedU
         });
     }
 
-    if req.path.is_some() && !path::valid(&req.path.as_ref().unwrap()) {
-        return json!({
-            "status": "error",
-            "message": "path is invalid"
-        });
-    }
+    if req.path.is_some() {
+        match req.path.as_ref().unwrap() {
+            p if !path::valid(&p) => {
+                return json!({
+                    "status": "error",
+                    "message": "path is invalid"
+                });
+            }
+            p if RESERVED_PATHS.contains(&p.as_str()) => {
+                return json!({
+                    "status": "error",
+                    "message": "path is reserved"
+                });
+            }
+            p if LinkItem::get_id(&p, &connection).is_some() => {
+                return json!({
+                    "status": "error",
+                    "message": "path already exists"
+                });
+            }
+            _ => (),
+        }
+    };
 
-    if req.path.is_some() && RESERVED_PATHS.contains(&req.path.as_ref().unwrap().as_str()) {
-        return json!({
-            "status": "error",
-            "message": "path is reserved"
-        });
-    }
-
-    if req.path.is_some() && LinkItem::get_id(&req.path.as_ref().unwrap(), &connection).is_some() {
-        return json!({
-            "status": "error",
-            "message": "path already exists",
-        });
+    if let Some(expires_in_minutes) = req.expires_in_minutes {
+        if expires_in_minutes < 1 || expires_in_minutes > 525601 {
+            return json!({
+                "status": "error",
+                "message": "expires_in_minutes out of bounds"
+            });
+        }
     }
 
     let mut to_track = Vec::new();
@@ -67,6 +81,8 @@ fn create(req: Json<CreateRequest>, connection: db::DbConn, user: AuthenticatedU
         req.path.as_ref().and_then(|p| Some(p.as_str())),
         &req.url,
         to_track,
+        req.max_uses,
+        req.expires_in_minutes,
         &connection,
     );
 
@@ -83,7 +99,9 @@ struct GetResponse {
     link_id: Option<String>,
     link_url: Option<String>,
     fields: Option<Vec<TrackItem>>,
+    expires_at: Option<Option<chrono::NaiveDateTime>>,
     uses: Option<i32>,
+    max_uses: Option<Option<i32>>,
     tracks: Option<Vec<LinkTrack>>,
 }
 
@@ -113,7 +131,9 @@ fn get(id: String, connection: db::DbConn, user: AuthenticatedUser) -> Json<GetR
             link_id: Some(item.id),
             link_url: Some(item.url),
             fields: Some(item.to_track),
+            expires_at: Some(item.expires_at),
             uses: Some(item.uses),
+            max_uses: Some(item.max_uses),
             tracks: Some(tracks),
         })
     } else {
@@ -122,7 +142,9 @@ fn get(id: String, connection: db::DbConn, user: AuthenticatedUser) -> Json<GetR
             link_id: None,
             link_url: None,
             fields: None,
+            expires_at: None,
             uses: None,
+            max_uses: None,
             tracks: None,
         })
     }

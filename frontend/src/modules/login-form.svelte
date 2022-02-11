@@ -1,6 +1,6 @@
 <script>
   import Input from "../components/input.svelte";
-  import { api } from "./path";
+  import { api } from "../util/path";
 
   let username = "";
   let password = "";

@@ -4,7 +4,7 @@
   export let shouldFetch = true;
 
   import { onMount } from "svelte";
-  import { api } from "../modules/path.js";
+  import { api } from "../util/path.js";
 
   const logout = async () => {
     await fetch(`${api()}/users/logout`, {

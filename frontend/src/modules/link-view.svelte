@@ -1,12 +1,14 @@
 <script>
   import Navbar from "../components/navbar.svelte";
   import Clipboard from "svelte-clipboard";
-  import { api, apiBase } from "./path";
+  import { api, apiBase } from "../util/path";
+  import { formatDifference, utcTimestamp } from "../util/time";
   import { onMount } from "svelte";
 
   let result = undefined;
   let loaded = false;
   let copiedLink = false;
+  let expired = false;
   export let id;
 
   onMount(async () => {
@@ -22,6 +24,10 @@
     if (json.status == 200) {
       result = json;
     }
+
+    expired =
+      (result.max_uses && result.uses >= result.max_uses) ||
+      (result.expires_at && Date.parse(result.expires_at) < utcTimestamp());
     loaded = true;
   });
 
@@ -75,6 +81,32 @@
         on:click={() => deleteLink()}
       >
         delete
+      </div>
+      <div class="w-full mt-6">
+        {#if expired}
+          <div class="text-red-400">Expired</div>
+        {/if}
+        <div class="text-gray-300">
+          Uses: <strong class="text-white">{result.uses}</strong>
+          {#if result.max_uses}
+            / {result.max_uses}
+          {/if}
+        </div>
+        {#if result.expires_at}
+          <div class="text-gray-300">
+            Expire{expired ? "d" : "s"} at: <strong class="text-white">{result.expires_at}</strong>
+          </div>
+          {#if !expired}
+            <div class="text-gray-300">
+              Expires in: <strong class="text-white"
+                >{formatDifference(
+                  new Date(Date.parse(result.expires_at)),
+                  new Date(utcTimestamp())
+                )}</strong
+              > from now
+            </div>
+          {/if}
+        {/if}
       </div>
     </div>
     <div class="w-4/5 mx-auto rounded-xl border-2 border-gray-800 mt-12 p-4">

@@ -3,7 +3,7 @@
   import Links from "./links.svelte";
   import LoginForm from "./login-form.svelte";
   import Navbar from "../components/navbar.svelte";
-  import { api } from "./path";
+  import { api } from "../util/path";
 
   import { onMount } from "svelte";
 

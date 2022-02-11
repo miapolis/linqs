@@ -3,6 +3,7 @@
   export let url;
   export let uses;
   export let track_id;
+  export let expired;
 </script>
 
 <div
@@ -10,8 +11,10 @@
     const url = `${window.location.origin}/link?id=${track_id}`;
     window.location = url;
   }}
-  class="bg-gray-900 cursor-pointer rounded-lg outline-hidden outline-offset-0
-  hover:outline-slate-800 hover:outline hover:outline-2 p-3"
+  class={`${
+    !expired ? "bg-gray-900" : "bg-red-900"
+  } cursor-pointer rounded-lg outline-hidden outline-offset-0
+  hover:outline-slate-800 hover:outline hover:outline-2 p-3`}
 >
   <div class="w-full overflow-hidden">
     <div class="flex flex-row items-center">

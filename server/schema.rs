@@ -14,6 +14,9 @@ table! {
         user_id -> Nullable<Int4>,
         uses -> Nullable<Int4>,
         to_track -> Nullable<Array<Track_item>>,
+        created_at -> Timestamp,
+        expires_at -> Nullable<Timestamp>,
+        max_uses -> Nullable<Int4>,
     }
 }
 

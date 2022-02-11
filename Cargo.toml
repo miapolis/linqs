@@ -9,7 +9,7 @@ path = "server/main.rs"
 
 [dependencies]
 argon2 = "0.3.3"
-chrono = "0.4.19"
+chrono = {version = "0.4.19", features = ["serde"]}
 colored = "2.0.0"
 diesel = {version = "1.4.4", features = ["postgres", "chrono", "r2d2", "network-address"]}
 diesel-derive-enum = {version = "1.1.2", features = ["postgres"]}

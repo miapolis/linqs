@@ -27,7 +27,10 @@ pub struct LinkItem {
     pub user_id: i32,
     pub url: String,
     pub track_id: String,
+    pub created_at: chrono::NaiveDateTime,
+    pub expires_at: Option<chrono::NaiveDateTime>,
     pub uses: i32,
+    pub max_uses: Option<i32>,
     pub to_track: Vec<TrackItem>,
 }
 
@@ -38,7 +41,10 @@ pub struct InsertableLinkItem {
     pub user_id: i32,
     pub url: String,
     pub track_id: String,
+    pub created_at: chrono::NaiveDateTime,
+    pub expires_at: Option<chrono::NaiveDateTime>,
     pub uses: i32,
+    pub max_uses: Option<i32>,
     pub to_track: Vec<TrackItem>,
 }
 
@@ -59,6 +65,8 @@ impl LinkItem {
         user_id: i32,
         url: &str,
         track_id: &str,
+        expires_at: Option<chrono::NaiveDateTime>,
+        max_uses: Option<i32>,
         to_track: Vec<TrackItem>,
         conn: &PgConnection,
     ) -> LinkItem {
@@ -68,6 +76,9 @@ impl LinkItem {
                 user_id,
                 url: url.to_owned(),
                 track_id: track_id.to_owned(),
+                created_at: chrono::Utc::now().naive_utc(),
+                expires_at,
+                max_uses,
                 uses: 0,
                 to_track,
             })
@@ -103,6 +114,17 @@ impl LinkItem {
 
     pub fn consume(id: &str, ip: &str, user_agent: &str, conn: &PgConnection) -> Option<LinkItem> {
         if let Some(item) = Self::get_id(id, conn) {
+            if let Some(max_uses) = item.max_uses {
+                if item.uses >= max_uses {
+                    return None;
+                }
+            }
+            if let Some(expires_at) = item.expires_at {
+                if expires_at < Utc::now().naive_utc() {
+                    return None;
+                }
+            }
+
             let ip = track_value(&item.to_track, TrackItem::Ip, ip);
             let user_agent = track_value(&item.to_track, TrackItem::UserAgent, user_agent);
             let time = track_value(&item.to_track, TrackItem::Time, Utc::now().naive_utc());

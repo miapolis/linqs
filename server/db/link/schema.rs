@@ -7,7 +7,10 @@ table! {
         user_id -> Int4,
         url -> Text,
         track_id -> Text,
+        created_at -> Timestamp,
+        expires_at -> Nullable<Timestamp>,
         uses -> Integer,
+        max_uses -> Nullable<Integer>,
         to_track -> Array<TrackItemMapping>,
     }
 }

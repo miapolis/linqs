@@ -1,6 +1,7 @@
 <script>
   import LinkCard from "../components/link-card.svelte";
-  import { api } from "./path";
+  import { api } from "../util/path";
+  import { utcTimestamp } from "../util/time";
   import { onMount } from "svelte";
 
   let links = [];
@@ -11,7 +12,19 @@
         credentials: "include",
       })
     ).json();
-    links = json.links;
+
+    let properLinks = [];
+    for (const link of json.links) {
+      let properLink = link;
+
+      properLink.expired = link.expires_at
+        ? Date.parse(link.expires_at) < utcTimestamp()
+        : false;
+
+      properLinks.push(properLink);
+    }
+
+    links = properLinks;
   });
 </script>
 
@@ -24,6 +37,7 @@
         url={link.url}
         track_id={link.track_id}
         uses={link.uses}
+        expired={link.expired}
       />
     {/each}
   </div>
