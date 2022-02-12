@@ -11,9 +11,12 @@
     "prettier:check": "prettier --check ."
   },
   "devDependencies": {
+    "@carbon/charts-svelte": "^0.54.12",
     "astro": "^0.22.20",
+    "d3": "^7.3.0",
     "prettier": "^2.5.1",
-    "prettier-plugin-astro": "^0.0.12"
+    "prettier-plugin-astro": "^0.0.12",
+    "ua-parser-js": "^1.0.2"
   },
   "dependencies": {
     "svelte-clipboard": "^1.0.0",

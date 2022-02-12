@@ -13,4 +13,7 @@ export default {
     tailwindConfig: "./tailwind.config.cjs",
   },
   renderers: ["@astrojs/renderer-svelte"],
+  vite: {
+    optimizeDeps: { include: ["@carbon/charts"] },
+  },
 };

@@ -1,7 +1,9 @@
 <script>
   import Navbar from "../components/navbar.svelte";
   import Clipboard from "svelte-clipboard";
+  import PieChart from "../components/pie-chart.svelte";
   import { api, apiBase } from "../util/path";
+  import parser from "ua-parser-js";
   import { formatDifference, utcTimestamp } from "../util/time";
   import { onMount } from "svelte";
 
@@ -10,6 +12,9 @@
   let copiedLink = false;
   let expired = false;
   export let id;
+
+  let oses = new Map();
+  let data = [];
 
   onMount(async () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -29,6 +34,24 @@
       (result.max_uses && result.uses >= result.max_uses) ||
       (result.expires_at && Date.parse(result.expires_at) < utcTimestamp());
     loaded = true;
+
+    for (const track of result.tracks) {
+      if (track.user_agent) {
+        let os = parser(track.user_agent).os.name;
+        if (os) {
+          if (oses.get(os)) {
+            oses.set(os, oses.get(os) + 1);
+          } else {
+            oses.set(os, 1);
+          }
+        }
+      }
+    }
+
+    data = Array.from(oses.entries()).map(([os, count]) => ({
+      group: os,
+      value: count,
+    }));
   });
 
   const deleteLink = async () => {
@@ -94,7 +117,8 @@
         </div>
         {#if result.expires_at}
           <div class="text-gray-300">
-            Expire{expired ? "d" : "s"} at: <strong class="text-white">{result.expires_at}</strong>
+            Expire{expired ? "d" : "s"} at:
+            <strong class="text-white">{result.expires_at}</strong>
           </div>
           {#if !expired}
             <div class="text-gray-300">
@@ -109,13 +133,19 @@
         {/if}
       </div>
     </div>
+    {#if data.length > 0}
+      <div class="w-4/5 mx-auto mt-6">
+        <PieChart {data} />
+      </div>
+    {/if}
     <div class="w-4/5 mx-auto rounded-xl border-2 border-gray-800 mt-12 p-4">
       {#if result.tracks.length}
         <table>
           <tr>
             {#if result.fields.includes("Time")}
               <th class="text-gray-300">Time</th>
-
+            {/if}
+            {#if result.fields.includes("Ip")}
               <th class="text-gray-300">IP</th>
             {/if}
             {#if result.fields.includes("UserAgent")}

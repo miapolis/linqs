@@ -7,10 +7,11 @@ export const formatDifference = (one, two) => {
   let diff = one.getTime() - two.getTime();
 
   let months;
-  months = one.getFullYear() - two.getFullYear();
-  months -= one.getMonth();
-  months += two.getMonth();
+  months = two.getFullYear() - one.getFullYear();
+  months -= two.getMonth();
+  months += one.getMonth();
 
+  console.log("months", months);
   months = months <= 0 ? 0 : months;
 
   const days = Math.floor(diff / 1000 / 60 / 60 / 24);
@@ -24,8 +25,8 @@ export const formatDifference = (one, two) => {
 
   const seconds = Math.floor(diff / 1000);
 
-  return `${months > 0 ? `${months} months, ` : ""}${
-    days > 0 ? `${days} day${days > 1 ? "s" : ""}, ` : ""
+  return `${months > 0 ? `${months} mo, ` : ""}${
+    days > 0 ? `${days} d, ` : ""
   }${hours > 0 ? `${hours} hr, ` : ""}${minutes > 0 ? `${minutes} min, ` : ""}${
     seconds > 0 ? `${seconds} sec` : ""
   }`;
