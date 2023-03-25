@@ -16,7 +16,7 @@
     "d3": "^7.3.0",
     "prettier": "^2.5.1",
     "prettier-plugin-astro": "^0.0.12",
-    "ua-parser-js": "^1.0.2"
+    "ua-parser-js": "^1.0.33"
   },
   "dependencies": {
     "svelte-clipboard": "^1.0.0",
